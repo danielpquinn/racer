@@ -1,5 +1,6 @@
 define([
-], function () {
+  'jquery'
+], function ($) {
 
   function App() {
     this.initialize();
@@ -16,25 +17,14 @@ define([
   App.prototype.bindEvents = function () {
     var self = this;
 
-    window.addEventListener('deviceorientation', function (e) {
-      self.onDeviceOrientation(e);
-    }, false);
-  };
-
-  App.prototype.onDeviceOrientation = function (e) {
-    var self = this;
-
-    if (self.shouldEmit) {
-      self.io.emit('deviceorientation', {
-        alpha: e.alpha,
-        beta: e.beta,
-        gamma: e.gamma
-      });
-      self.shouldEmit = false;
-      setTimeout(function () {
-        self.shouldEmit = true;
-      }, 20);
-    }
+    $('.key').on('touchstart', function (e) {
+      var keyCode = $(e.target).data('keycode');
+      self.io.emit('key pressed', { keyCode: keyCode });
+    });
+    $('.key').on('touchend', function (e) {
+      var keyCode = $(e.target).data('keycode');
+      self.io.emit('key released', { keyCode: keyCode });
+    });
   };
 
   return App;

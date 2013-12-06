@@ -1,25 +1,45 @@
-requirejs.config({
-  paths: {
-    'jquery': '../bower_components/jquery/jquery',
-    'underscore': '../bower_components/underscore/underscore',
-    'threejs': '../bower_components/threejs/build/three'
-  },
-  shim: {
-    'threejs': {
-      exports: 'THREE'
-    },
-    'underscore': {
-      exports: '_'
+require.config({
+  'shim': {
+    'easel': {
+      'exports': 'createjs'
     }
+  },
+  'paths': {
+    'jquery': '../bower_components/jquery/jquery',
+    'easel': '../bower_components/easeljs/lib/easeljs-NEXT.min',
+    'underscore': '../bower_components/underscore/underscore'
   }
 });
 
 require([
-  'desktop-app'
-], function (App) {
+  'jquery',
+  'barrys-bad-night/globals',
+  'barrys-bad-night/barrysBadNight',
+  'easel',
+  'underscore'
+], function ($, Globals, BarrysBadNight) {
 
-  "use strict";
+  // Wait for DOM
+  $(document).ready(function (e) {
 
-  window.app = new App();
+    // Simple pubsub
+    $fps = $('#fps');
 
+    // Create new game instance
+    var game = new BarrysBadNight('game-canvas');
+
+    // Create global reference
+    window.GAME = game;
+
+    game.loadLevel('data/level1.json');
+    
+    // Set frames per second
+    createjs.Ticker.setFPS(Globals.fps);
+
+    // start game loop
+    createjs.Ticker.on('tick', function (e) {
+      $fps.text(Math.floor(createjs.Ticker.getMeasuredFPS()));
+    });
+
+  });
 });

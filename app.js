@@ -1,4 +1,4 @@
-_ = require('underscore'),
+var _ = require('underscore'),
   express = require('express.io'),
   app = express().http().io(),
   players = [];
@@ -9,7 +9,6 @@ app.io.sockets.on('connection', function (socket) {
   var ua = socket.handshake.headers['user-agent'];
 
   if (!/mobile/i.test(ua)) {
-    console.log('connection data?');
     socket.emit('connection data', {
       players: players
     });
@@ -28,11 +27,12 @@ app.io.sockets.on('connection', function (socket) {
     id: socket.id
   });
 
-  socket.on('deviceorientation', function (data) {
-    app.io.broadcast('deviceorientation', {
-      id: socket.id,
-      event: data
-    });
+  socket.on('key pressed', function (data) {
+    app.io.broadcast('key pressed', { id: socket.id, keyCode: data.keyCode });
+  });
+
+  socket.on('key released', function (data) {
+    app.io.broadcast('key released', { id: socket.id, keyCode: data.keyCode });
   });
 
   socket.on('disconnect', function () {
